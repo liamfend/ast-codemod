@@ -1,0 +1,26 @@
+{
+  "name": "ast-codemod",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/liamfend/ast-codemod.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/liamfend/ast-codemod/issues"
+  },
+  "homepage": "https://github.com/liamfend/ast-codemod#readme",
+  "devDependencies": {
+    "jest": "^27.0.4"
+  },
+  "dependencies": {
+    "jscodeshift": "^0.12.0"
+  }
+}
