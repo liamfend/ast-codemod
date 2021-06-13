@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "jscodeshift":"jscodeshift",
+    "ast":"node ./node_modules/jscodeshift -t ./src/transformers/importTransformer.js ./src/waiting.js  --parse babylon "
   },
   "repository": {
     "type": "git",
@@ -21,6 +23,10 @@
     "jest": "^27.0.4"
   },
   "dependencies": {
-    "jscodeshift": "^0.12.0"
+    "@babel/plugin-proposal-class-properties": "^7.14.5",
+    "@babel/plugin-proposal-decorators": "^7.14.5",
+    "camelcase": "^6.2.0",
+    "jscodeshift": "^0.12.0",
+    "jscodeshift-helper": "^1.1.0"
   }
 }

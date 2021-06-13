@@ -1,53 +1,49 @@
-const  jscodeshift = require('jscodeshift')
+const  j = require('jscodeshift') 
 
+const camelCase = require('camelcase');
+const fs  = require('fs');
+const path = require('path');
+// var describe = require('j-helper').describe;
 
-const root = jscodeshift(`import Svg from '~components/svg';alert('a');console.log('aaaa');show();let b =  Svg.test();<Svg hash='img' className='aaa' />`)
+const toCamelCase = (str) =>camelCase(str, {pascalCase: true, preserveConsecutiveUppercase: true})
 
-
-//删除console
-const callExpressions  = root.find(jscodeshift.CallExpression,{
-    callee:{
-        type: 'MemberExpression',
-        object: { type: 'Identifier', name: 'console' },
-    }
-})
-
-callExpressions.remove()
-
+var content  = fs.readFileSync(path.resolve(process.cwd(),'src/waiting.js')).toString()
+var newFile   = path.resolve(process.cwd(),'src/waiting1.js')
+const root = j(content)    
 //查找导入的svg 模块 name
-const importExpressions = root.find(jscodeshift.ImportDeclaration,{ 
+const importExpressions = root.find(j.ImportDeclaration,{ 
     source:{
         type:'Literal',
         value:'~components/svg'
     }
 })
-const identifierCollection=importExpressions.find(jscodeshift.Identifier)
-const nodePath = identifierCollection.get(0)
-const variabeleName = nodePath.node.name 
+var  importNames = new Set()
+const identifierCollection=importExpressions.find(j.Identifier)
+
+if(identifierCollection.size()>0){
+    const variabeleName = identifierCollection.get(0).node.name 
+    const svgNodePath =root.findJSXElements(variabeleName).map((nodePath)=>{
+        const {node} = nodePath
+        let  params = {}
+        node.openingElement.attributes.forEach(item=>{
+            params[`${item.name.name}`] = item.value.value 
+        })
+        node.openingElement.attributes = node.openingElement.attributes.filter(item => item.name.name!=='hash')
+        let componentName = toCamelCase(params.hash)
+        node.openingElement.name.name = componentName
+        importNames.add(componentName) 
+    })
+    //删除之前的引用
+    importExpressions.replaceWith(nodePath => {
+        const {node} = nodePath
+        node.specifiers =  [...importNames].map(name => j.importSpecifier(j.identifier(name),j.identifier(name)))
+        node.source.value  =  '~components/svgs' 
+        return  node
+    }) 
+
+   
+}
  
-root.find(jscodeshift.MemberExpression,{
-    object:{
-        name:variabeleName
-    },
-    property:{
-        name:'test'
-    }
-})
-.replaceWith(nodePath => {
-    const { node } = nodePath
-    node.property.name = 'myTest'
-    return node
-})
-.find(jscodeshift.JSXOpeningElement,{
-    
-})
-.replaceWith(nodePath => {
-    const { node } = nodePath
-    node.property.name = 'myTest'
-    return node
-})
-.toSource()
-
 let m = root.toSource()
-
-console.log(m)
+ fs.writeFileSync(newFile,m)
+//console.log(m)
