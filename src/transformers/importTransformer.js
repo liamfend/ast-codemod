@@ -26,14 +26,16 @@ const transformer = (file, api) => {
         (item) => item.name.name !== "hash"
       );
       let componentName = toCamelCase(params.hash);
-      node.openingElement.name.name = componentName;
+      node.openingElement.name.name = `${componentName}Icon`;
       importNames.add(componentName);
     });
     //删除之前的引用
     importExpressions.replaceWith((nodePath) => {
       const { node } = nodePath;
       node.specifiers = Array.from(importNames).map((name) =>
-        j.importSpecifier(j.identifier(name), j.identifier(name))
+         //svg组建的名字会和其他组建重复。。 我真的不想判断了。太累了直接用as全部重写
+        //j.importSpecifier(j.identifier(name), j.identifier(name))
+        j.importSpecifier(j.identifier(name), j.identifier(`${name}Icon`))
       );
       node.source.value = "~components/svgs";
       return node;

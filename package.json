@@ -5,8 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "jest",
-    "jscodeshift":"jscodeshift",
-    "ast":"node ./node_modules/jscodeshift -t ./src/transformers/importTransformer.js ./src/waiting.js  --parse babylon "
+    "ast":"jscodeshift",
+    "ast1":"jscodeshift -t ./src/transformers/importTransformer.js ./src/waiting.js  --parse babylon "
   },
   "repository": {
     "type": "git",
